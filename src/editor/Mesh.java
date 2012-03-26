@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.media.j3d.Appearance;
 import javax.media.j3d.Bounds;
@@ -45,6 +46,8 @@ import core.Coordinate;
 import core.Element;
 import core.Elements;
 import core.Identificator;
+import core.PointData;
+import core.PointsSet;
 import edu.wlu.cs.levy.CG.KDTree;
 import edu.wlu.cs.levy.CG.KeyDuplicateException;
 import edu.wlu.cs.levy.CG.KeySizeException;
@@ -59,15 +62,18 @@ public class Mesh implements Visible {
 	/**
 	 *  Mesh point with result value
 	 */
-	private class MeshPoint {	    
+	private class MeshPoint implements PointData {	    
 		
 		protected int index;
 		protected double result = 0;
 		protected int resCount = 0;
 		protected boolean selected = false;
+		protected Coordinate c;
+		protected double r;
 				
-		protected MeshPoint(int index) {
+		protected MeshPoint(Coordinate c, int index) {
 			this.index = index;			
+			this.c = c;
 		} 
 		
 		public double getResult() {
@@ -111,6 +117,21 @@ public class Mesh implements Visible {
 		
 		protected double[] getXYZ() {
 			return coords.getXYZ(index);
+		}
+
+		@Override
+		public Coordinate getCoordinate() {
+			return c;
+		}
+
+		@Override
+		public double getR() {
+			return r;
+		}
+
+		@Override
+		public void setR(double r) {
+			this.r = r; 
 		}
 	}
 	
@@ -186,7 +207,10 @@ public class Mesh implements Visible {
 	// 	Mesh data
 	//************************
 	
-	private KDTree<MeshPoint> pointsSet = null;
+//	private KDTree<MeshPoint> pointsSet = null;
+	private PointsSet<MeshPoint> pointsSet = null;
+	private double searchDistance = 0.5, assembleDistance = 0.001;
+	
 	private CoordArrayList coords = new CoordArrayList();
 	private ArrayList<MeshPoint> points = new ArrayList<MeshPoint>();
 	private int indexOrigin = 0;
@@ -226,7 +250,7 @@ public class Mesh implements Visible {
 		
 	public int point(double x, double y, double z) {
 		int index = points.size();
-		MeshPoint p = new MeshPoint(index);		
+		MeshPoint p = new MeshPoint(new Coordinate (x,y,z), index);		
 		points.add(p);
 		coords.add(x);
 		coords.add(y);
@@ -275,7 +299,7 @@ public class Mesh implements Visible {
 	}
 	
 	public void addMesh(Mesh m) {
-		m.assemble();
+//		m.assemble();
 		addPoints(m.coords.getArray());
 		for (int i = 0; i < m.points.size(); i++) {
 			if (m.points.get(i).hasResult()) 
@@ -287,52 +311,72 @@ public class Mesh implements Visible {
 	
 	private MeshPoint add(MeshPoint p) {
 		if (pointsSet == null) throw new NullPointerException("Mesh did not assembled");
-
-		MeshPoint p1 = p;	
-		try {
-			pointsSet.insert(p.getXYZ(), p);
-		} catch (KeySizeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (KeyDuplicateException e) {
-			if (p.hasResult()) {
-				try {
-					p1 = pointsSet.nearest(p.getXYZ());
-				} catch (KeySizeException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				p1.addResult(p);	
-			}						
-		}		
+		
+		p = pointsSet.add(p);
+		
+//		MeshPoint p1 = p;
+//		try {
+//			pointsSet.insert(p.getXYZ(), p);
+//		} catch (KeySizeException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (KeyDuplicateException e) {
+//			if (p.hasResult()) {
+//				try {
+//					p1 = pointsSet.nearest(p.getXYZ());
+//				} catch (KeySizeException e1) {
+//					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//				}
+//				p1.addResult(p);	
+//			}						
+//		}		
 		if (p.hasResult()) {			
 			if (p.result > maxResult) maxResult = p.result;
 			if (p.result < minResult) minResult = p.result;
 		}		
-		return p1;
+		return p;
+	}
+	
+	public MeshPoint findNearestPoint(double x, double y, double z) {
+		Coordinate c = new Coordinate(x,y,z);
+		List<MeshPoint> list = pointsSet.nearest(new Coordinate(x,y,z), searchDistance);
+		double min = Double.MAX_VALUE;		
+		MeshPoint pmin = null;
+		for (MeshPoint p : list) {
+			double d = p.getCoordinate().distance(c);
+			if (d < min) {
+				min = d;
+				pmin = p;
+			}
+		}
+		return pmin;
 	}
 	
 	public void selectNearestPoint(double x, double y, double z) {
 		if (pointsSet == null) throw new NullPointerException("Mesh did not assembled");
-		MeshPoint p = null;
-		try {
-			p = pointsSet.nearest(new double[] {x, y, z});
-		} catch (KeySizeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
+		MeshPoint p = findNearestPoint(x,y,z);
+		
+		
+		
+//		try {
+//			p = pointsSet.nearest(new double[] {x, y, z});
+//		} catch (KeySizeException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}		
 		if (p != null) p.select();
 	}
 	
 	public double getResult(double x, double y, double z) {
 		if (pointsSet == null) throw new NullPointerException("Mesh did not assembled");		
-		MeshPoint p = null;
-		try {
-			p = pointsSet.nearest(new double[] {x, y, z});
-		} catch (KeySizeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		MeshPoint p = findNearestPoint(x,y,z);
+//		try {
+//			p = pointsSet.nearest(new double[] {x, y, z});
+//		} catch (KeySizeException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		if (p != null) return p.getResult(); else return 0;		
 	}
 	
@@ -549,6 +593,9 @@ public class Mesh implements Visible {
 	protected void assemblePoints() {
 		System.out.print("Assembling...");
 		
+		for (int i = 0; i < points.size(); i++) {
+			pointsSet.calculateMaxMinR(points.get(i).getCoordinate());
+		}
 		
 		for (int i = 0; i < points.size(); i++) {
 			MeshPoint p = points.get(i);			
@@ -577,7 +624,8 @@ public class Mesh implements Visible {
 	public void assemble() {
 		int tableSize = points.size()/10;
 		if (tableSize < 100) tableSize = 100;
-		pointsSet = new KDTree<MeshPoint>(3);		
+//		pointsSet = new KDTree<MeshPoint>(3);
+		pointsSet = new PointsSet<MeshPoint>(tableSize, assembleDistance);
 		assemblePoints();
 		create();
 	}

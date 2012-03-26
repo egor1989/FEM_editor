@@ -1,7 +1,5 @@
 package core;
 
-import Jama.Matrix;
-
 /**
  * Class for 3D coordinate
  * @author Constantin Shashkin
@@ -42,6 +40,10 @@ public class Coordinate {
 	
 	public double getZ() {
 		return z;
+	}
+	
+	public double[] getXYZ() {
+		return new double[] {x, y, z};
 	}
 	
 	public void setXYZ(double x, double y, double z) {

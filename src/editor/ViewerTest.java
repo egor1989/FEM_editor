@@ -222,7 +222,7 @@ public class ViewerTest {
 		
 		Mesh m = new Mesh();
 		
-		int n = 50;
+		int n = 100;
 		double s = 1;
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < n; j++) {
@@ -383,10 +383,10 @@ public class ViewerTest {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 //		Viewer.view(testMesh());
-		Drawing d = drawWall();
-		d.setMeshSize(0.1);
+		Drawing d = drawMesh();
+//		d.setMeshSize(0.1);
 		
-		d.meshAll();
+//		d.meshAll();
 		Viewer.view(d);
 		
 		
