@@ -44,7 +44,6 @@ import com.sun.j3d.utils.image.TextureLoader;
 
 import core.Coordinate;
 import core.Element;
-import core.Elements;
 import core.Identificator;
 import core.PointData;
 import core.PointsSet;
@@ -207,7 +206,6 @@ public class Mesh implements Visible {
 	// 	Mesh data
 	//************************
 	
-//	private KDTree<MeshPoint> pointsSet = null;
 	private PointsSet<MeshPoint> pointsSet = null;
 	private double searchDistance = 0.5, assembleDistance = 0.001;
 	
@@ -232,7 +230,7 @@ public class Mesh implements Visible {
 		this.vs = new VisualSettings(vs);
 	}
 	
-	public Mesh(Elements elements) {
+	public Mesh(ArrayList<Element> elements) {
 		this();
 		for (Element e : elements) {
 			Mesh m = e.draw(null);
@@ -240,7 +238,7 @@ public class Mesh implements Visible {
 		}
 	}
 	
-	public Mesh(Elements elements, Identificator resultId) {
+	public Mesh(ArrayList<Element> elements, Identificator resultId) {
 		this();
 		for (Element e : elements) {
 			Mesh m = e.draw(resultId);
@@ -313,24 +311,7 @@ public class Mesh implements Visible {
 		if (pointsSet == null) throw new NullPointerException("Mesh did not assembled");
 		
 		p = pointsSet.add(p);
-		
-//		MeshPoint p1 = p;
-//		try {
-//			pointsSet.insert(p.getXYZ(), p);
-//		} catch (KeySizeException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (KeyDuplicateException e) {
-//			if (p.hasResult()) {
-//				try {
-//					p1 = pointsSet.nearest(p.getXYZ());
-//				} catch (KeySizeException e1) {
-//					// TODO Auto-generated catch block
-//					e1.printStackTrace();
-//				}
-//				p1.addResult(p);	
-//			}						
-//		}		
+				
 		if (p.hasResult()) {			
 			if (p.result > maxResult) maxResult = p.result;
 			if (p.result < minResult) minResult = p.result;
@@ -356,27 +337,14 @@ public class Mesh implements Visible {
 	public void selectNearestPoint(double x, double y, double z) {
 		if (pointsSet == null) throw new NullPointerException("Mesh did not assembled");
 		MeshPoint p = findNearestPoint(x,y,z);
-		
-		
-		
-//		try {
-//			p = pointsSet.nearest(new double[] {x, y, z});
-//		} catch (KeySizeException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}		
+			
 		if (p != null) p.select();
 	}
 	
 	public double getResult(double x, double y, double z) {
 		if (pointsSet == null) throw new NullPointerException("Mesh did not assembled");		
 		MeshPoint p = findNearestPoint(x,y,z);
-//		try {
-//			p = pointsSet.nearest(new double[] {x, y, z});
-//		} catch (KeySizeException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+
 		if (p != null) return p.getResult(); else return 0;		
 	}
 	
@@ -591,7 +559,7 @@ public class Mesh implements Visible {
 	}
 		
 	protected void assemblePoints() {
-		System.out.print("Assembling...");
+//		System.out.print("Assembling...");
 		
 		for (int i = 0; i < points.size(); i++) {
 			pointsSet.calculateMaxMinR(points.get(i).getCoordinate());
@@ -602,7 +570,7 @@ public class Mesh implements Visible {
 			points.set(i, add(p));
 		}
 		
-		System.out.println("done.");
+//		System.out.println("done.");
 	}
 	
 	public void create() {		

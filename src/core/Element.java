@@ -14,6 +14,12 @@ import editor.Mesh;
 public interface Element {
 	
 	/**
+	 * Sets the reference to model. Used by Solver. 
+	 * @param model
+	 */
+	public void setModel(Model model);
+	
+	/**
 	 * Returns period of element live. Within this period element take part in calculations.
 	 * After the last time in period internal forces in element are applied to the system.
 	 * @return Time.Period
@@ -68,7 +74,7 @@ public interface Element {
 	 * Sets internal solution data (for example during loading from file)
 	 */
 	public void setSolutionData(SolutionData solutionData);
-	
+		
 	/**
 	 * Returns view of element in Mesh object.
 	 * @return Mesh

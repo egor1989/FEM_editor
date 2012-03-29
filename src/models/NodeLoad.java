@@ -8,6 +8,7 @@ import core.DoubleParameter;
 import core.Element;
 import core.ElementNode;
 import core.Identificator;
+import core.Model;
 import core.Parameter;
 import core.SolutionData;
 import core.Time;
@@ -16,6 +17,7 @@ import editor.Mesh;
 
 public class NodeLoad implements Element {
 
+	protected Model model = null;
 	protected Time.Period period;		
 	protected ElementNode[] nodes = null;	
 	protected Double value;	
@@ -25,6 +27,11 @@ public class NodeLoad implements Element {
 		nodes = new ElementNode[] {new ElementNode(c, dof)};
 		period = t.periodFrom();
 		this.value = value;		
+	}
+	
+	@Override
+	public void setModel(Model model) {
+		this.model = model; 
 	}
 	
 	@Override

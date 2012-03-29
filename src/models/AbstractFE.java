@@ -14,6 +14,7 @@ import Jama.Matrix;
 
 public abstract class AbstractFE implements Element {
 	
+	protected Model model = null;
 	protected FESolutionData solutionData;	
 	protected int order;
 	protected Time.Period period;		
@@ -38,7 +39,12 @@ public abstract class AbstractFE implements Element {
 			throw new ElementException("Wrong material " + material.getClass().getName() +  "for element type " + this.getClass().getName());
 		this.material = material;
 	}
-
+	
+	@Override
+	public void setModel(Model model) {
+		this.model = model; 
+	}
+	
 	@Override
 	public Time.Period period() {
 		return period; 

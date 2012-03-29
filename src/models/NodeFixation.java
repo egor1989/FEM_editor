@@ -6,7 +6,7 @@ import editor.Mesh;
 
 public class NodeFixation implements Element {
 
-	
+	protected Model model = null;
 	protected Time.Period period;		
 	protected ElementNode[] nodes = null;
 	protected String description = "";
@@ -14,6 +14,11 @@ public class NodeFixation implements Element {
 	public NodeFixation(Coordinate c, DOF dof, double value, Time t) {
 		nodes = new ElementNode[] {new ElementNode(c, dof,value)};
 		period = t.periodFrom();		
+	}
+	
+	@Override
+	public void setModel(Model model) {
+		this.model = model; 
 	}
 	
 	@Override

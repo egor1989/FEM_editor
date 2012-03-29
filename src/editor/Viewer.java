@@ -59,7 +59,7 @@ import com.sun.j3d.utils.pickfast.behaviors.PickTranslateBehavior;
 import com.sun.j3d.utils.pickfast.behaviors.PickingCallback;
 import com.sun.j3d.utils.universe.SimpleUniverse;
 
-import core.Elements;
+import core.Element;
 import core.Identificator;
 
 
@@ -458,18 +458,24 @@ public class Viewer extends Canvas3D {
 		});
 	}
     
-    public static void view(Elements elements) {
+    public static void view(ArrayList<Element> elements) {
     	Mesh m = new Mesh(elements);
     	Drawing d = new Drawing();		
 		d.addMesh(m);
 		Viewer.view(d);
     }
     
-    public static void view(Elements elements, Identificator resultId) {
+    public static void view(ArrayList<Element> elements, Identificator resultId) {
     	Mesh m = new Mesh(elements, resultId);
     	m.assemble();
     	Drawing d = new Drawing();		
 		d.addMesh(m);
+		view(d);
+    }
+    
+    public static void view(Mesh mesh) {    	
+    	Drawing d = new Drawing();		
+		d.addMesh(mesh);
 		view(d);
     }
     

@@ -20,7 +20,7 @@ public class PointsSet<T extends PointData> implements Iterable<T> {
 	}
 	
 	double assembleDistance;
-	double maxR, minR;	
+	double maxR = 0, minR = Double.MAX_VALUE;	
 	int tableSize;
 
 	Object[] table;
