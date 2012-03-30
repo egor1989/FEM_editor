@@ -16,4 +16,7 @@ public class InternalIdents {
 	public static Identificator gammaXY = new Identificator("Shear deformation gammaXY");
 	public static Identificator gammaYZ = new Identificator("Shear deformation gammaYZ");
 	public static Identificator gammaXZ = new Identificator("Shear deformation gammaXZ");	
+	
+//	public static Identificator curvatureY = new Identificator("Beam curvature around local Y axis");
+//	public static Identificator curvatureZ = new Identificator("Beam curvature around local Z axis");
 }

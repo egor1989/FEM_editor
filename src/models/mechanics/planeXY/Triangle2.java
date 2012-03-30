@@ -12,6 +12,7 @@ import models.AbstractFE;
 import models.ElementCoordinates;
 import models.LCoordinate;
 import models.LCoordinates;
+import models.LocalCoordinates;
 import models.mechanics.DOFs;
 import models.mechanics.InternalIdents;
 import models.mechanics.ResultIdents;
@@ -47,7 +48,7 @@ public class Triangle2 extends PlaneFE {
 	}
 	
 	@Override
-	public ElementCoordinates getLocalCoordinates() {
+	public ElementCoordinates getElementCoordinates() {
 		return L;
 	}
 	
@@ -131,6 +132,11 @@ public class Triangle2 extends PlaneFE {
 		m.line(i3, i13);
 		m.line(i13, i1);		
 		return m;
+	}
+
+	@Override
+	public LocalCoordinates getLocalCoordinates() {		
+		return null;
 	}
 	
 	

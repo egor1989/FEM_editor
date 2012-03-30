@@ -69,7 +69,7 @@ public abstract class AbstractFE implements Element {
 
 	@Override
 	public double[][] getMatrix(Time t) {
-		ElementCoordinates L = getLocalCoordinates();
+		ElementCoordinates L = getElementCoordinates();
 		Matrix K = null;		
 		Coordinate[] intPoints = L.getIntegrationPoints(order);
 		double[] factors = L.getWeightFactors(order);		
@@ -81,12 +81,17 @@ public abstract class AbstractFE implements Element {
 			else
 				K.plusEquals(Ki);			
 		}
+		LocalCoordinates lc = getLocalCoordinates();
+		if (lc != null) {
+			Matrix C = lc.getMatrix(); 
+			K = C.transpose().times(K.times(C));
+		}			
 		return K.times(getV()).getArray();		
 	}
 
 	@Override
 	public double[] getFVector(Time t) {
-		ElementCoordinates L = getLocalCoordinates();
+		ElementCoordinates L = getElementCoordinates();
 		Matrix F = null;		
 		Coordinate[] intPoints = L.getIntegrationPoints(order);
 		double[] factors = L.getWeightFactors(order);		
@@ -103,7 +108,7 @@ public abstract class AbstractFE implements Element {
 
 	@Override
 	public double[] getInternalFVector(double[] x, Time t) {
-		ElementCoordinates L = getLocalCoordinates();
+		ElementCoordinates L = getElementCoordinates();
 		solutionData.setX(x);		
 		Matrix vx = new Matrix(x,x.length);		
 		Matrix F = null;		
@@ -140,7 +145,7 @@ public abstract class AbstractFE implements Element {
 
 	
 	public double getV() {
-		ElementCoordinates L = getLocalCoordinates();
+		ElementCoordinates L = getElementCoordinates();
 		return L.getV();
 	}
 	
@@ -156,7 +161,9 @@ public abstract class AbstractFE implements Element {
 		return resultsId;
 	}
 	
-	public abstract ElementCoordinates getLocalCoordinates();
+	public abstract ElementCoordinates getElementCoordinates();
+	
+	public abstract LocalCoordinates getLocalCoordinates();
 	
 	public abstract DOF[] getNMatrixMembers();
 	

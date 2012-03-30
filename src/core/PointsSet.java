@@ -1,9 +1,12 @@
 package core;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
 
 
 /** PointsSet class (analog of HashSet, but nodes are equal when distance 
@@ -15,8 +18,7 @@ import java.util.List;
 public class PointsSet<T extends PointData> implements Iterable<T> {
 	
 	private class NodesList extends LinkedList<T> {
-		private static final long serialVersionUID = 1L;
-		
+		private static final long serialVersionUID = 1L;		
 	}
 	
 	double assembleDistance;
@@ -26,6 +28,7 @@ public class PointsSet<T extends PointData> implements Iterable<T> {
 	Object[] table;
 	double[] maxRTable;
 	int size = 0;
+	boolean sortesSearchList = false;
 	
 	private NodesList table(int i) {
 		return (NodesList) table[i];
@@ -171,7 +174,32 @@ public class PointsSet<T extends PointData> implements Iterable<T> {
 		return new NodesSetIterator();
 	}		
 		
-	
+	private class DistanceComparator implements Comparator<T> {
+		
+		public Coordinate basePoint;
+		
+		public DistanceComparator(Coordinate basePoint) {
+			this.basePoint = basePoint;
+		}
+		
+		private int degree(MeshNode n) {
+			return n.getConnectedNodes().size();
+		}
+		
+		public int compare(T n1, T n2) {
+			double d1 = basePoint.distance(n1.getCoordinate());
+			double d2 = basePoint.distance(n1.getCoordinate());			
+			if (d1 < d2) return -1;
+			if (d1 > d2) return 1;
+			return 0;
+		}
+		
+	}
+		
+	public void setSortesSearchList(boolean sortesSearchList) {
+		this.sortesSearchList = sortesSearchList;
+	}
+
 	public List<T> nearest(Coordinate c, double distance) {
 		LinkedList<T> list = new LinkedList<T>();
 		
@@ -200,6 +228,8 @@ public class PointsSet<T extends PointData> implements Iterable<T> {
 				if (distance(n,c) < distance) list.add(n); 			
 			}	
 		}		
+		Collections.sort(list, new DistanceComparator(c));
+		
 		return list;
 	}
 	

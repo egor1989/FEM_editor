@@ -9,6 +9,7 @@ import models.AbstractFE;
 import models.ElementCoordinates;
 import models.LCoordinate;
 import models.LCoordinates;
+import models.LocalCoordinates;
 import models.mechanics.DOFs;
 import models.mechanics.InternalIdents;
 import models.mechanics.ResultIdents;
@@ -41,7 +42,7 @@ public class Triangle1 extends PlaneFE {
 	}
 	
 	@Override
-	public ElementCoordinates getLocalCoordinates() {
+	public ElementCoordinates getElementCoordinates() {
 		return L;
 	}
 	
@@ -87,6 +88,11 @@ public class Triangle1 extends PlaneFE {
 		setResults(m,resultId,points);
 		m.triangle(points[0], points[1], points[2]);
 		return m;
+	}
+
+	@Override
+	public LocalCoordinates getLocalCoordinates() {
+		return null;
 	}
 
 	
